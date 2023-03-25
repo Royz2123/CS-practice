@@ -1,6 +1,13 @@
 # Intellij stuff
 .idea
 
+# Eclipse stuff
+.metadata
+.project
+.classpath
+.settings
+~$*
+
 # Compiled class file
 *.class
 
