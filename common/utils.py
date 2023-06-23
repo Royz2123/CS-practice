@@ -25,6 +25,9 @@ def run_java_program(java_class_name: str, java_code: str) -> str:
     java_path = os.path.join("tmp", f"{java_class_name}.java")
     class_path = os.path.join("tmp", f"{java_class_name}.class")
 
+    # Save edited code in local java file
+    if not os.path.exists("tmp"):
+        os.mkdir("tmp")
     with open(java_path, "w") as f:
         f.write(java_code)
 
