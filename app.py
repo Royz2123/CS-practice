@@ -31,6 +31,9 @@ def get_all_exercise_pages() -> Dict[str, Callable]:
 
             exercise_dir_path = os.path.join(chapter_dir_path, exercise_dir_name)
             exercise_pages[display_name(exercise_dir_name)] = lambda x=exercise_dir_path: write_exercise_page(x)
+
+    # Sort based on display name (without icon)
+    exercise_pages = dict(sorted(exercise_pages.items(), key=lambda x: x[0][1:]))
     return exercise_pages
 
 
