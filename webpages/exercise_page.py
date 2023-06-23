@@ -4,7 +4,8 @@ from typing import Dict
 
 import streamlit as st
 
-from common.utils import display_name
+from common.utils import display_name, run_java_program
+from components.code import write_code
 from components.editor import write_editor
 from components.error import write_error
 
@@ -30,7 +31,6 @@ class Exercise(object):
             "pdf_path": self.pdf_path,
             "test_java_path": self.template_java_path
         }
-        print(self.all_paths)
 
         # Make sure that exercise is valid
         self.valid_exercise = True
@@ -51,10 +51,20 @@ class Exercise(object):
                 self.template_java_code = f.read()
                 self.template_java_code += "\n\n"
 
-    def write(self) -> Dict[str, str]:
+    def write_exercise(self) -> Dict[str, str]:
         st.subheader(self.display_exercise_name)
         editor_response = write_editor(self.template_java_code)
         return editor_response
+
+    def write_run_response(self, java_code: str) -> None:
+        try:
+            output = run_java_program(self.exercise_name, java_code)
+            st.success("התוכנה שלך רצה בהצלחה! להלן הפלט:")
+            display_output = "<התוכנה לא הדפיסה כלום>" if not output else output
+            write_code(display_output)
+        except Exception as e:
+            st.error("התוכנה שלך נכשלה! להלן הפירוט:")
+            st.error(str(e))
 
 
 def write_exercise_page(exercise_dir_path: str = "exercises/Exercise_2_1/") -> None:
@@ -64,13 +74,20 @@ def write_exercise_page(exercise_dir_path: str = "exercises/Exercise_2_1/") -> N
         return
 
     # Display exercise
-    editor_response = exercise.write()
+    editor_response = exercise.write_exercise()
 
     # Ignore responses from page reload
     if editor_response["type"] == "":
         return
 
     # Handle valid editor responses
-    # TODO: Run the program
-    # TODO: Test the program
-    print(editor_response)
+    if editor_response["type"] == "submit":
+        exercise.write_run_response(editor_response["text"])
+    elif editor_response["type"] == "test":
+        # TODO: Test the program
+        print(editor_response)
+    else:
+        write_error(
+            "אנחנו לא מכירים את הפעולה שבחרת - "
+            f'{editor_response["type"]}'
+        )
