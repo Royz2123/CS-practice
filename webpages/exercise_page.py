@@ -63,8 +63,11 @@ class Exercise(object):
             display_output = "<התוכנה לא הדפיסה כלום>" if not output else output
             write_code(display_output)
         except Exception as e:
-            st.error("התוכנה שלך נכשלה! להלן הפירוט:")
-            st.error(str(e))
+            st.error("הרצת התוכנה נכשלה! להלן הפירוט:")
+            err_type, err_info = str(e).split("<br>", 1)
+            st.error(err_type)
+            write_code(err_info)
+
 
 
 def write_exercise_page(exercise_dir_path: str = "exercises/Exercise_2_1/") -> None:

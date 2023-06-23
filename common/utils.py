@@ -33,13 +33,13 @@ def run_java_program(java_class_name: str, java_code: str) -> str:
 
     try:
         # TODO: handle unsafe stuff!
-        output = subprocess.run(f"javac {java_path}", capture_output=True, shell=True)
+        output = subprocess.run(f"javac a{java_path}", capture_output=True, shell=True)
         if output.returncode != 0:
-            raise Exception("לא הצלחנו לקמפל את הקוד שלך ...")
+            raise Exception(f"לא הצלחנו לקמפל את הקוד שלך ... התקבלה השגיאה הבאה:<br> {output.stderr.decode()}")
 
         output = subprocess.run(f'cd "tmp" && java {java_class_name}', capture_output=True, shell=True)
         if output.returncode != 0:
-            raise Exception("הייתה לך שגיאת זמן ריצה ...")
+            raise Exception(f"הייתה לך שגיאת זמן ריצה ... התקבלה השגיאה הבאה:<br> {output.stderr.decode()}")
     finally:
         try_remove(java_path)
         try_remove(class_path)
