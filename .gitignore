@@ -2,7 +2,7 @@
 .idea
 
 # Eclipse stuff
-.metadata
+exercises/.metadata
 .project
 .classpath
 .settings
