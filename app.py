@@ -6,6 +6,8 @@ import streamlit as st
 from common.utils import display_name
 from components.body_rtl import set_body_rtl
 from webpages.about_page import write_about_page
+from webpages.chapter_page import write_chapter_page
+from webpages.exercise_intro_page import write_exercises_intro_page
 from webpages.exercise_page import write_exercise_page
 from webpages.home_page import write_home_page
 
@@ -15,10 +17,13 @@ EXERCISES_BASE_DIR_PATH = "exercises"
 def get_all_exercise_pages() -> Dict[str, Callable]:
     exercise_pages = {}
     for chapter_dir_name in os.listdir(EXERCISES_BASE_DIR_PATH):
+        # Handle chapter
         if not chapter_dir_name.startswith("Chapter"):
             continue
-
         chapter_dir_path = os.path.join(EXERCISES_BASE_DIR_PATH, chapter_dir_name)
+        exercise_pages[display_name(chapter_dir_name)] = lambda x=chapter_dir_path: write_chapter_page(x)
+
+        # Handle exercises under the chapter
         for exercise_dir_name in os.listdir(chapter_dir_path):
             if not exercise_dir_name.startswith("Exercise"):
                 continue
@@ -37,8 +42,8 @@ def test_page():
 
 PAGES = {
     "🏠 עמוד הבית": write_home_page,
-    "🏠 מידע נוסף": write_about_page,
-    "✏️ תרגילים": write_exercise_page,
+    "❓ איך מתחילים?": write_about_page,
+    "✏️ תרגילים": write_exercises_intro_page,
     **get_all_exercise_pages()
 }
 

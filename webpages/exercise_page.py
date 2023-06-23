@@ -1,4 +1,4 @@
-import os.path
+import os
 from typing import Dict
 
 import streamlit as st
@@ -57,12 +57,13 @@ class Exercise(object):
                 self.test_java_code += "\n\n"
 
     def write_exercise(self) -> Dict[str, str]:
-        st.subheader(self.display_exercise_name)
+        st.write("להלן הסבר על התרגיל / קישור ל-PDF")
+        st.write("מוזמנים ללחוץ כאן כדי להוריד את כל החומרים הרלוונטיים לתרגיל")
 
+        # Display tests toggle button
         col1, col2, _ = st.columns(3)
         with col1:
             st.write("הצגת הטסטים")
-
         with col2:
             display_tests = tog.st_toggle_switch(
                 label="",
@@ -75,14 +76,17 @@ class Exercise(object):
             )
 
         # Displate the code editor
-        selected_code = self.test_java_code if display_tests else self.template_java_code
-        selected_heading = self.tests_name if display_tests else self.exercise_name
-        editor_response = write_editor(selected_code, additional_heading=f"{selected_heading}.java")
+        editor_response = None
+        if display_tests:
+            # TODO: Make it look more like the editor, with header and copy button. Maybe can bypass editability.
+            write_code(self.test_java_code)
+        else:
+            editor_response = write_editor(self.template_java_code, additional_heading=f"{self.exercise_name}.java")
         return editor_response
 
     def write_run_response(self, java_code: str) -> None:
         try:
-            with st.spinner("Compiling & Running ..."):
+            with st.spinner("מקמפל ומריץ ..."):
                 output = run_java_program(self.exercise_name, java_code)
             st.success("התוכנה שלך רצה בהצלחה! להלן הפלט:")
             display_output = "<התוכנה לא הדפיסה כלום>" if not output else output
@@ -94,7 +98,7 @@ class Exercise(object):
             write_code(err_info)
 
 
-def write_exercise_page(exercise_dir_path: str = "exercises/Exercise_2_1/") -> None:
+def write_exercise_page(exercise_dir_path: str) -> None:
     # Create exercise instance
     exercise = Exercise(exercise_dir_path)
     if not exercise.valid_exercise:
@@ -104,7 +108,7 @@ def write_exercise_page(exercise_dir_path: str = "exercises/Exercise_2_1/") -> N
     editor_response = exercise.write_exercise()
 
     # Ignore responses from page reload
-    if editor_response["type"] == "":
+    if editor_response is None or editor_response["type"] == "":
         return
 
     # Handle valid editor responses
