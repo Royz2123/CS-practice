@@ -33,7 +33,7 @@ def run_java_program(java_class_name: str, java_code: str) -> str:
 
     try:
         # TODO: handle unsafe stuff!
-        output = subprocess.run(f"javac a{java_path}", capture_output=True, shell=True)
+        output = subprocess.run(f"javac {java_path}", capture_output=True, shell=True)
         if output.returncode != 0:
             raise Exception(f"לא הצלחנו לקמפל את הקוד שלך ... התקבלה השגיאה הבאה:<br> {output.stderr.decode()}")
 
