@@ -1,4 +1,3 @@
-import glob
 import os
 from typing import Callable, Dict
 
@@ -6,9 +5,9 @@ import streamlit as st
 
 from common.utils import display_name
 from components.body_rtl import set_body_rtl
+from webpages.about_page import write_about_page
 from webpages.exercise_page import write_exercise_page
 from webpages.home_page import write_home_page
-from webpages.about_page import write_about_page
 
 EXERCISES_BASE_DIR_PATH = "exercises"
 
