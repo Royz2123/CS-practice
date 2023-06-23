@@ -1,5 +1,5 @@
 import os
-from typing import Dict
+from typing import Dict, Any
 
 import streamlit as st
 import streamlit_toggle as tog
@@ -56,8 +56,11 @@ class Exercise(object):
                 self.test_java_code = f.read()
                 self.test_java_code += "\n\n"
 
-    def write_exercise(self) -> Dict[str, str]:
+    def write_exercise(self) -> Dict[str, Any]:
+        # TODO: Improve explanation of every exercise
         st.write("להלן הסבר על התרגיל / קישור ל-PDF")
+
+        # TODO: Download button for all necessary files
         st.write("מוזמנים ללחוץ כאן כדי להוריד את כל החומרים הרלוונטיים לתרגיל")
 
         # Display tests toggle button
@@ -76,6 +79,7 @@ class Exercise(object):
             )
 
         # Displate the code editor
+
         editor_response = None
         if display_tests:
             # TODO: Make it look more like the editor, with header and copy button. Maybe can bypass editability.
@@ -116,7 +120,8 @@ def write_exercise_page(exercise_dir_path: str) -> None:
         exercise.write_run_response(editor_response["text"])
     elif editor_response["type"] == "test":
         # TODO: Test the program
-        print(editor_response)
+        # TODO: Move the test file to a common file and not in every exercise
+        print("Going to test: ", editor_response)
     else:
         write_error(
             "אנחנו לא מכירים את הפעולה שבחרת - "

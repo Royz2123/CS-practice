@@ -139,9 +139,11 @@ def write_editor(initial_code: str = DEFAULT_INITIAL_CODE, additional_heading: s
     else:
         editor_info_bar = EDITOR_INFO_BAR
 
-    return code_editor(
+    # Return the code editor component
+    editor_outputs = code_editor(
         initial_code,
         lang="java",
         buttons=EDITOR_BUTTONS,
         info=editor_info_bar
     )
+    return editor_outputs

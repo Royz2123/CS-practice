@@ -1,17 +1,19 @@
 import os
 import shutil
 import subprocess
-import time
 import uuid
-
-from components.error import write_error
 
 
 def display_name(name: str) -> str:
-    name = name.replace("Exercise", "📄 תרגיל")
-    name = name.replace("Chapter", "📂 פרק")
-    name = name.replace("_", " ")
-    return name
+    # TODO: Improve display name for exercises, maybe restructuring of how they're saved
+    if name.startswith("Exercise"):
+        _, chapter_num, exercise_num = name.split("_", 2)
+        return f"📄 פרק {chapter_num}, תרגיל {exercise_num}"
+    elif name.startswith("Chapter"):
+        _, chapter_num = name.split("_", 1)
+        return f"📂 פרק {chapter_num}"
+    else:
+        raise Exception(f"Unrecognized name for display - {name}")
 
 
 def try_remove(path: str) -> None:

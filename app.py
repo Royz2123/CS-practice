@@ -11,16 +11,17 @@ from webpages.exercise_intro_page import write_exercises_intro_page
 from webpages.exercise_page import write_exercise_page
 from webpages.home_page import write_home_page
 
-EXERCISES_BASE_DIR_PATH = "exercises"
+
+# TODO: Style more, change to a single color palette
 
 
 def get_all_exercise_pages() -> Dict[str, Callable]:
     exercise_pages = {}
-    for chapter_dir_name in os.listdir(EXERCISES_BASE_DIR_PATH):
+    for chapter_dir_name in os.listdir("exercises"):
         # Handle chapter
         if not chapter_dir_name.startswith("Chapter"):
             continue
-        chapter_dir_path = os.path.join(EXERCISES_BASE_DIR_PATH, chapter_dir_name)
+        chapter_dir_path = os.path.join("exercises", chapter_dir_name)
         exercise_pages[display_name(chapter_dir_name)] = lambda x=chapter_dir_path: write_chapter_page(x)
 
         # Handle exercises under the chapter
@@ -60,6 +61,7 @@ st.set_page_config(
 )
 set_body_rtl()
 
+# TODO: Make radio buttons more styled, and add indentation for folders. Shouldn't be that difficult
 selected_page_name = st.sidebar.radio(
     "Select Page",
     PAGES.keys(),
@@ -73,5 +75,3 @@ def display_page(page_name: str) -> None:
 
 
 display_page(selected_page_name)
-
-
