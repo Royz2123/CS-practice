@@ -1,8 +1,8 @@
-import base64
 import os.path
 from typing import Dict
 
 import streamlit as st
+import streamlit_toggle as tog
 
 from common.utils import display_name, run_java_program
 from components.code import write_code
@@ -20,12 +20,13 @@ class Exercise(object):
     def __init__(self, exercise_path: str):
         self.exercise_path = exercise_path
         self.exercise_name = os.path.basename(exercise_path)
+        self.tests_name = f"Test{self.exercise_name}"
         self.display_exercise_name = display_name(self.exercise_name)
 
         # Save all relevant paths
         self.template_java_path = os.path.join(exercise_path, f"{self.exercise_name}.java")
         self.pdf_path = os.path.join(exercise_path, f"{self.exercise_name}.pdf")
-        self.test_java_path = os.path.join(exercise_path, f"Test{self.exercise_name}.java")
+        self.test_java_path = os.path.join(exercise_path, f"{self.tests_name}.java")
         self.all_paths = {
             "template_path": self.template_java_path,
             "pdf_path": self.pdf_path,
@@ -51,9 +52,32 @@ class Exercise(object):
                 self.template_java_code = f.read()
                 self.template_java_code += "\n\n"
 
+            with open(self.test_java_path) as f:
+                self.test_java_code = f.read()
+                self.test_java_code += "\n\n"
+
     def write_exercise(self) -> Dict[str, str]:
         st.subheader(self.display_exercise_name)
-        editor_response = write_editor(self.template_java_code)
+
+        col1, col2, _ = st.columns(3)
+        with col1:
+            st.write("הצגת הטסטים")
+
+        with col2:
+            display_tests = tog.st_toggle_switch(
+                label="",
+                key="Key1",
+                default_value=False,
+                label_after=False,
+                inactive_color='#D3D3D3',
+                active_color="#11567f",
+                track_color="#29B5E8"
+            )
+
+        # Displate the code editor
+        selected_code = self.test_java_code if display_tests else self.template_java_code
+        selected_heading = self.tests_name if display_tests else self.exercise_name
+        editor_response = write_editor(selected_code, additional_heading=f"{selected_heading}.java")
         return editor_response
 
     def write_run_response(self, java_code: str) -> None:
@@ -67,7 +91,6 @@ class Exercise(object):
             err_type, err_info = str(e).split("<br>", 1)
             st.error(err_type)
             write_code(err_info)
-
 
 
 def write_exercise_page(exercise_dir_path: str = "exercises/Exercise_2_1/") -> None:

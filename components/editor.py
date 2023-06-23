@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import Any, Dict
 
 from code_editor import code_editor
@@ -123,17 +124,24 @@ EDITOR_INFO_BAR = {
     },
     "info": [{
         "name": "Java",
-        "style": {"width": "100px"}
+        "style": {"width": "300px"}
     }]
 }
 
 DEFAULT_INITIAL_CODE = "print('hello world')\n\n\n"
 
 
-def write_editor(initial_code: str = DEFAULT_INITIAL_CODE) -> Dict[str, Any]:
+def write_editor(initial_code: str = DEFAULT_INITIAL_CODE, additional_heading: str = "") -> Dict[str, Any]:
+    # Set code editor heading
+    if additional_heading:
+        editor_info_bar = deepcopy(EDITOR_INFO_BAR)
+        editor_info_bar["info"][0]["name"] = f"Java - {additional_heading}"
+    else:
+        editor_info_bar = EDITOR_INFO_BAR
+
     return code_editor(
         initial_code,
         lang="java",
         buttons=EDITOR_BUTTONS,
-        info=EDITOR_INFO_BAR
+        info=editor_info_bar
     )

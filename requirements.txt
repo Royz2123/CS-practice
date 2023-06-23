@@ -1,3 +1,4 @@
 streamlit
 st-pages
 streamlit_code_editor
+streamlit-toggle-switch
