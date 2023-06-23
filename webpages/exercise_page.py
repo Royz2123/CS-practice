@@ -82,7 +82,8 @@ class Exercise(object):
 
     def write_run_response(self, java_code: str) -> None:
         try:
-            output = run_java_program(self.exercise_name, java_code)
+            with st.spinner("Compiling & Running ..."):
+                output = run_java_program(self.exercise_name, java_code)
             st.success("התוכנה שלך רצה בהצלחה! להלן הפלט:")
             display_output = "<התוכנה לא הדפיסה כלום>" if not output else output
             write_code(display_output)
