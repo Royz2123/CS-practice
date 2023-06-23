@@ -37,7 +37,7 @@ def test_page():
 
 
 PAGES = {
-    "🏠 עמוד הבית": test_page,
+    "🏠 עמוד הבית": write_home_page,
     "🏠 מידע נוסף": write_about_page,
     "✏️ תרגילים": write_exercise_page,
     **get_all_exercise_pages()

@@ -6,8 +6,6 @@ from components.body_rtl import set_body_rtl
 
 
 def write_home_page() -> None:
-    set_body_rtl()
-
     st.write("# ברוכים הבאים", unsafe_allow_html=True)
 
     st.header("Sup")
