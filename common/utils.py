@@ -8,7 +8,6 @@ from common.java_class import JavaClass
 
 
 def display_name(name: str) -> str:
-    # TODO: Improve display name for exercises, maybe restructuring of how they're saved
     if name.startswith("Exercise"):
         _, chapter_num, exercise_num = name.split("_", 2)
         return f"📄 פרק {chapter_num}, תרגיל {exercise_num}"

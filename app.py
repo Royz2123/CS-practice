@@ -13,7 +13,8 @@ from webpages.home_page import write_home_page
 
 
 # TODO: Style more, change to a single color palette
-
+# TODO: Think about save mode with session state
+# TODO: Think about admin mode for playing with exercises, maybe replacing sol and such
 
 def get_all_exercise_pages() -> Dict[str, Callable]:
     exercise_pages = {}
