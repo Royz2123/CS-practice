@@ -26,6 +26,20 @@ def try_remove(path: str) -> None:
         pass
 
 
+def create_tmp_sub_folder() -> str:
+    """
+    Creates a temporary sub folder under tmp
+
+    :return:
+    """
+    if not os.path.exists("tmp"):
+        os.mkdir("tmp")
+    tmp_sub_folder_name = str(uuid.uuid4())[:8]
+    tmp_sub_folder_path = os.path.join("tmp", tmp_sub_folder_name)
+    os.mkdir(tmp_sub_folder_path)
+    return tmp_sub_folder_path
+
+
 def run_java_program(
         main_java_class: JavaClass,
         other_java_classes: List[JavaClass] = None
@@ -43,11 +57,7 @@ def run_java_program(
         other_java_classes = []
 
     # Create sub-folder under tmp folder for all the code
-    if not os.path.exists("tmp"):
-        os.mkdir("tmp")
-    tmp_sub_folder_name = str(uuid.uuid4())[:8]
-    tmp_sub_folder_path = os.path.join("tmp", tmp_sub_folder_name)
-    os.mkdir(tmp_sub_folder_path)
+    tmp_sub_folder_path = create_tmp_sub_folder()
 
     # Save all the java classes under this folder
     for java_class in [main_java_class] + other_java_classes:
@@ -66,7 +76,7 @@ def run_java_program(
 
         # Run the java program
         output = subprocess.run(
-            f'cd "tmp" && cd "{tmp_sub_folder_name}" && java {main_java_class.class_name}',
+            f'cd "{tmp_sub_folder_path}" && java {main_java_class.class_name}',
             capture_output=True,
             shell=True
         )

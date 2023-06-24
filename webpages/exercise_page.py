@@ -1,16 +1,18 @@
 import os
 from typing import Dict, Any, Literal
+from zipfile import ZipFile
 
 import streamlit as st
 import streamlit_toggle as tog
 
 from common.java_class import JavaClass
-from common.utils import display_name, run_java_program
+from common.utils import display_name, run_java_program, create_tmp_sub_folder, try_remove
 from components.code import write_code
 from components.editor import write_editor
 from components.error import write_error
 
-TESTING_FRAMEWORK_CLASS = JavaClass("TestingFramework", class_path=os.path.join("exercises", "TestingFramework.java"))
+TESTING_FRAMEWORK_PATH = os.path.join("exercises", "TestingFramework.java")
+TESTING_FRAMEWORK_CLASS = JavaClass("TestingFramework", class_path=TESTING_FRAMEWORK_PATH)
 
 
 class Exercise(object):
@@ -33,7 +35,7 @@ class Exercise(object):
         self.all_paths = {
             "template_path": self.template_java_path,
             "pdf_path": self.pdf_path,
-            "test_java_path": self.template_java_path
+            "test_java_path": self.test_java_path
         }
 
         # Make sure that exercise is valid
@@ -61,17 +63,40 @@ class Exercise(object):
 
             self.test_java_class = JavaClass(self.tests_name, class_code=self.test_java_code)
 
-    def write_exercise(self) -> Dict[str, Any]:
-        # TODO: Improve explanation of every exercise
-        st.write("להלן הסבר על התרגיל / קישור ל-PDF")
+    def write_download_exercise(self):
+        # Create tmp sub folder for zip file
+        tmp_sub_folder_path = create_tmp_sub_folder()
+        zip_file_name = f"{self.exercise_name}.zip"
+        tmp_zip_file_path = os.path.join(tmp_sub_folder_path, zip_file_name)
 
-        # TODO: Download button for all necessary files
-        st.write("מוזמנים ללחוץ כאן כדי להוריד את כל החומרים הרלוונטיים לתרגיל")
+        try:
+            # Create zip file with all the exercise
+            exercise_zip = ZipFile(tmp_zip_file_path, 'w')
+            for file_path in self.all_paths.values():
+                exercise_zip.write(file_path, arcname=os.path.basename(file_path))
+            exercise_zip.write(TESTING_FRAMEWORK_PATH, arcname=os.path.basename(TESTING_FRAMEWORK_PATH))
+            exercise_zip.close()
 
-        # Display tests toggle button
+            # Create zip download button
+            with open(tmp_zip_file_path, "rb") as f:
+                col1, col2, _ = st.columns(3)
+
+                with col1:
+                    st.write("להורדת קבצי התרגיל:")
+                with col2:
+                    st.download_button(
+                        'הורדה',
+                        f.read(),
+                        file_name=zip_file_name,
+                        mime="application/zip"
+                    )
+        finally:
+            try_remove(tmp_sub_folder_path)
+
+    def write_toggle_code_switch(self) -> bool:
         col1, col2, _ = st.columns(3)
         with col1:
-            st.write("הצגת הטסטים")
+            st.write("להצגת הטסטים של התרגיל:")
         with col2:
             display_tests = tog.st_toggle_switch(
                 label="",
@@ -82,13 +107,20 @@ class Exercise(object):
                 active_color="#11567f",
                 track_color="#29B5E8"
             )
+        return display_tests
+
+    def write_exercise(self) -> Dict[str, Any]:
+        # TODO: Improve explanation of every exercise
+        st.write("להלן הסבר על התרגיל / קישור ל-PDF")
+
+        # Display download and toggle button
+        self.write_download_exercise()
+        display_tests = self.write_toggle_code_switch()
 
         # Displate the code editor
-
         editor_response = None
         if display_tests:
             # TODO: Make it look more like the editor, with header and copy button. Maybe can bypass editability.
-            # TODO
             write_code(self.test_java_code)
         else:
             editor_response = write_editor(self.template_java_code, additional_heading=f"{self.exercise_name}.java")
