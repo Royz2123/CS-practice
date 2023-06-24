@@ -2,6 +2,9 @@ import os
 import shutil
 import subprocess
 import uuid
+from typing import Dict, List
+
+from common.java_class import JavaClass
 
 
 def display_name(name: str) -> str:
@@ -23,31 +26,47 @@ def try_remove(path: str) -> None:
         pass
 
 
-def run_java_program(java_class_name: str, java_code: str) -> str:
-    # Save edited code in tmp folder, under generated sub-folder
+def run_java_program(
+        main_java_class: JavaClass,
+        other_java_classes: List[JavaClass] = None
+) -> str:
+    """
+    This method takes the given java classes, compiles them and runs :)
+
+    :param main_java_class:
+    :param other_java_classes:
+    :return:
+    """
+
+    # Default java_classes is empty list
+    if other_java_classes is None:
+        other_java_classes = []
+
+    # Create sub-folder under tmp folder for all the code
     if not os.path.exists("tmp"):
         os.mkdir("tmp")
     tmp_sub_folder_name = str(uuid.uuid4())[:8]
     tmp_sub_folder_path = os.path.join("tmp", tmp_sub_folder_name)
     os.mkdir(tmp_sub_folder_path)
-    java_path = os.path.join("tmp", tmp_sub_folder_name, f"{java_class_name}.java")
 
-    # Write content to local file
-    with open(java_path, "w") as f:
-        f.write(java_code)
+    # Save all the java classes under this folder
+    for java_class in [main_java_class] + other_java_classes:
+        java_class.save_class(tmp_sub_folder_path)
+    tmp_sub_folder_java_files = os.path.join(tmp_sub_folder_path, "*.java")
 
+    # Compile and run
     try:
         # TODO: handle unsafe stuff!
         # TODO: Change from <br> to different error types
 
         # Compile the program
-        output = subprocess.run(f"javac {java_path}", capture_output=True, shell=True)
+        output = subprocess.run(f"javac {tmp_sub_folder_java_files}", capture_output=True, shell=True)
         if output.returncode != 0:
             raise Exception(f"לא הצלחנו לקמפל את הקוד שלך ... התקבלה השגיאה הבאה:<br> {output.stderr.decode()}")
 
         # Run the java program
         output = subprocess.run(
-            f'cd "tmp" && cd "{tmp_sub_folder_name}" && java {java_class_name}',
+            f'cd "tmp" && cd "{tmp_sub_folder_name}" && java {main_java_class.class_name}',
             capture_output=True,
             shell=True
         )

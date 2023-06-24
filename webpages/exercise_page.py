@@ -1,13 +1,16 @@
 import os
-from typing import Dict, Any
+from typing import Dict, Any, Literal
 
 import streamlit as st
 import streamlit_toggle as tog
 
+from common.java_class import JavaClass
 from common.utils import display_name, run_java_program
 from components.code import write_code
 from components.editor import write_editor
 from components.error import write_error
+
+TESTING_FRAMEWORK_CLASS = JavaClass("TestingFramework", class_path=os.path.join("exercises", "TestingFramework.java"))
 
 
 class Exercise(object):
@@ -56,6 +59,8 @@ class Exercise(object):
                 self.test_java_code = f.read()
                 self.test_java_code += "\n\n"
 
+            self.test_java_class = JavaClass(self.tests_name, class_code=self.test_java_code)
+
     def write_exercise(self) -> Dict[str, Any]:
         # TODO: Improve explanation of every exercise
         st.write("להלן הסבר על התרגיל / קישור ל-PDF")
@@ -83,23 +88,60 @@ class Exercise(object):
         editor_response = None
         if display_tests:
             # TODO: Make it look more like the editor, with header and copy button. Maybe can bypass editability.
+            # TODO
             write_code(self.test_java_code)
         else:
             editor_response = write_editor(self.template_java_code, additional_heading=f"{self.exercise_name}.java")
         return editor_response
 
-    def write_run_response(self, java_code: str) -> None:
+    def write_response(self, java_code: str, run_type: Literal["submit", "test"]) -> None:
         try:
             with st.spinner("מקמפל ומריץ ..."):
-                output = run_java_program(self.exercise_name, java_code)
-            st.success("התוכנה שלך רצה בהצלחה! להלן הפלט:")
+                if run_type == "submit":
+                    output = run_java_program(JavaClass(self.exercise_name, class_code=java_code))
+                else:
+                    output = run_java_program(
+                        self.test_java_class,
+                        other_java_classes=[
+                            JavaClass(self.exercise_name, class_code=java_code),
+                            TESTING_FRAMEWORK_CLASS
+                        ]
+                    )
+
+            if run_type == "submit":
+                st.success("התוכנה שלך רצה בהצלחה! להלן הפלט:")
+            else:
+                first_line = output.splitlines()[0]
+                _, passed_tests = first_line.split(": ", 1)
+                passed, overall = passed_tests.split("/", 1)
+
+                if passed == overall:
+                    st.success(
+                        "התוכנה שלך עברה את כל הטסטים ("
+                        + passed_tests
+                        + ")! להלן הפלט:"
+                    )
+                elif passed == "0":
+                    st.error(
+                        "התוכנה שלך לא עברה אף טסט ("
+                        + passed_tests
+                        + ") ... להלן הפלט:"
+                    )
+                else:
+                    st.warning(
+                        "התוכנה שלך עברה רק חלק מהטסטים ("
+                        + passed_tests
+                        + "). להלן הפלט:"
+                    )
+
+            # Display output in either case
             display_output = "<התוכנה לא הדפיסה כלום>" if not output else output
-            write_code(display_output)
+            write_code(display_output, language=None)
         except Exception as e:
             st.error("הרצת התוכנה נכשלה! להלן הפירוט:")
             err_type, err_info = str(e).split("<br>", 1)
             st.error(err_type)
-            write_code(err_info)
+            write_code(err_info, language=None)
 
 
 def write_exercise_page(exercise_dir_path: str) -> None:
@@ -116,14 +158,10 @@ def write_exercise_page(exercise_dir_path: str) -> None:
         return
 
     # Handle valid editor responses
-    if editor_response["type"] == "submit":
-        exercise.write_run_response(editor_response["text"])
-    elif editor_response["type"] == "test":
-        # TODO: Test the program
-        # TODO: Move the test file to a common file and not in every exercise
-        print("Going to test: ", editor_response)
-    else:
+    # TODO: Organize all the exercises
+    if editor_response["type"] not in ["submit", "test"]:
         write_error(
             "אנחנו לא מכירים את הפעולה שבחרת - "
             f'{editor_response["type"]}'
         )
+    exercise.write_response(editor_response["text"], editor_response["type"])

@@ -1,7 +1,7 @@
 import streamlit as st
 
 
-def write_code(code: str, language: str = "java") -> None:
+def write_code(code: str, language: str or None = "java") -> None:
     st.markdown(
         """
             <style>
