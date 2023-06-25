@@ -67,8 +67,6 @@ st.set_page_config(
 )
 set_direction("body")
 
-
-
 st.markdown(
     """
         <style>
@@ -104,6 +102,8 @@ def display_page(page_name: str) -> None:
 
 
 display_page(selected_page_name)
+
+# TODO: Improve menu more - selectable options on whole line, smooth transition
 html(
     f"""
         <script id={uuid.uuid4()}>
@@ -123,24 +123,21 @@ html(
 
             function setIndentation() {{
                 console.log("Setting Indentation");
-                // First, make this iframe smaller on the way
                 allRadios = window.parent.document.getElementsByClassName("st-c1 st-cf st-cg st-ae st-af st-ag st-ah st-ai st-aj st-ch st-ci");
-                console.log(allRadios);
                 for (let i = 0; i < allRadios.length; i++) {{
                     if(allRadios[i].innerHTML.startsWith("📄")) {{
-                        allRadios[i].innerHTML = "&emsp;&emsp;" + allRadios[i].innerHTML;
+                        console.log("Indenting page", allRadios[i].innerHTML)
+                        allRadios[i].innerHTML = "&emsp;&emsp;&emsp;&emsp;" + allRadios[i].innerHTML;
                     }}
                     if(allRadios[i].innerHTML.startsWith("📂")) {{
-                        allRadios[i].innerHTML = "&emsp;" + allRadios[i].innerHTML;
+                        console.log("Indenting directory", allRadios[i].innerHTML)
+                        allRadios[i].innerHTML = "&emsp;&emsp;" + allRadios[i].innerHTML;
                     }}
                 }}
             }}
 
             // Set trigger for indentation script
-            radioNavBar = getNavBar()
             setIndentation();
-            // setTimeout(setIndentation, 1000); 
-            // radioNavBar.addEventListener("load", setIndentation);
         </script>
     """
 )
