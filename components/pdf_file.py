@@ -3,6 +3,7 @@ import streamlit as st
 
 
 def write_pdf(pdf_path: str) -> None:
+    # TODO: fix blocked on streamlit cloud
     with open(pdf_path, "rb") as f:
         base64_pdf = base64.b64encode(f.read()).decode('utf-8')
     pdf_display = f"""
