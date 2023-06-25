@@ -2,8 +2,11 @@ import os
 import shutil
 import subprocess
 import uuid
-from typing import Dict, List
+from typing import List
 
+from streamlit.components.v1 import html
+
+from common.errors import JavaProgramException
 from common.java_class import JavaClass
 
 
@@ -71,7 +74,10 @@ def run_java_program(
         # Compile the program
         output = subprocess.run(f"javac {tmp_sub_folder_java_files}", capture_output=True, shell=True)
         if output.returncode != 0:
-            raise Exception(f"לא הצלחנו לקמפל את הקוד שלך ... התקבלה השגיאה הבאה:<br> {output.stderr.decode()}")
+            raise JavaProgramException(
+                f"לא הצלחנו לקמפל את הקוד שלך ... התקבלה השגיאה הבאה:",
+                output.stderr.decode()
+            )
 
         # Run the java program
         output = subprocess.run(
@@ -80,10 +86,55 @@ def run_java_program(
             shell=True
         )
         if output.returncode != 0:
-            raise Exception(f"הייתה לך שגיאת זמן ריצה ... התקבלה השגיאה הבאה:<br> {output.stderr.decode()}")
+            raise JavaProgramException(
+                f"הייתה לך שגיאת זמן ריצה ... התקבלה השגיאה הבאה:",
+                output.stderr.decode()
+            )
     finally:
         try_remove(tmp_sub_folder_path)
     return output.stdout.decode()
+
+
+def indent_menu():
+    html(
+        f"""
+            <script id={uuid.uuid4()}>
+                console.log("Including indentation script");
+
+                function setIndentation() {{
+                    console.log("Setting Indentation");
+                    
+                    // Get all side bar radio buttons
+                    allRadios = window.parent.document.getElementsByTagName("label");
+                    console.log("Found", allRadios.length, "radio buttons in total (some are irrelevant)");
+                    for (let i = 0; i < allRadios.length; i++) {{
+                        if(allRadios[i].getAttribute("data-baseweb") != "radio"){{
+                            console.log("Skipping radio:", allRadios[i]);
+                            continue;
+                        }}
+                        let radioDot =  allRadios[i].childNodes[0];
+                        radioDot.style.display = "none";
+                        
+                        let radioContent = allRadios[i].childNodes[2];
+                        radioContent.id = "menuRadioOption";
+                        console.log("Handling radio:", radioContent);
+                    
+                        if(radioContent.innerHTML.startsWith("📄")) {{
+                            console.log("Indenting page", radioContent.innerHTML);
+                            radioContent.innerHTML = "&emsp;&emsp;&emsp;&emsp;" + radioContent.innerHTML;
+                        }}
+                        if(radioContent.innerHTML.startsWith("📂")) {{
+                            console.log("Indenting directory", radioContent.innerHTML);
+                            radioContent.innerHTML = "&emsp;&emsp;" + radioContent.innerHTML;
+                        }}
+                    }}
+                }}
+
+                // Set trigger for indentation script
+                setIndentation();
+            </script>
+        """
+    )
 
 
 if __name__ == '__main__':

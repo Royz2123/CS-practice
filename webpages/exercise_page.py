@@ -5,11 +5,13 @@ from zipfile import ZipFile
 import streamlit as st
 import streamlit_toggle as tog
 
+from common.errors import RecognizedSiteException, JavaProgramException
 from common.java_class import JavaClass
 from common.utils import display_name, run_java_program, create_tmp_sub_folder, try_remove
 from components.code import write_code
 from components.editor import write_editor
 from components.error import write_error
+from components.pdf_file import write_pdf
 
 TESTING_FRAMEWORK_PATH = os.path.join("exercises", "TestingFramework.java")
 TESTING_FRAMEWORK_CLASS = JavaClass("TestingFramework", class_path=TESTING_FRAMEWORK_PATH)
@@ -43,25 +45,24 @@ class Exercise(object):
         for path_name, path in self.all_paths.items():
             if not os.path.exists(path):
                 display_path_name = Exercise.PATH_DISPLAY_NAMES[path_name]
-                write_error(
-                    f"יש לנו בעיה עם התרגיל שבחרתם, לא הצלחנו למצוא את "
+                raise RecognizedSiteException(
+                    f"יש לנו בעיה עם התרגיל שבחרתם "
+                    f"({self.display_exercise_name})"
+                    f". לא הצלחנו למצוא את "
                     f"{display_path_name}"
-                    f" של התרגיל ולכן לא ניתן לטעון אותו."
+                    f" של התרגיל ולכן לא הצלחנו לטעון אותו."
                 )
-                self.valid_exercise = False
-                break
 
         # Load exercise content if valid
-        if self.valid_exercise:
-            with open(self.template_java_path) as f:
-                self.template_java_code = f.read()
-                self.template_java_code += "\n\n"
+        with open(self.template_java_path) as f:
+            self.template_java_code = f.read()
+            self.template_java_code += "\n\n"
 
-            with open(self.test_java_path) as f:
-                self.test_java_code = f.read()
-                self.test_java_code += "\n\n"
+        with open(self.test_java_path) as f:
+            self.test_java_code = f.read()
+            self.test_java_code += "\n\n"
 
-            self.test_java_class = JavaClass(self.tests_name, class_code=self.test_java_code)
+        self.test_java_class = JavaClass(self.tests_name, class_code=self.test_java_code)
 
     def write_download_exercise(self):
         # Create tmp sub folder for zip file
@@ -93,7 +94,8 @@ class Exercise(object):
         finally:
             try_remove(tmp_sub_folder_path)
 
-    def write_toggle_code_switch(self) -> bool:
+    @staticmethod
+    def write_toggle_code_switch() -> bool:
         col1, col2, _ = st.columns(3)
         with col1:
             st.write("להצגת הטסטים של התרגיל:")
@@ -110,15 +112,16 @@ class Exercise(object):
         return display_tests
 
     def write_exercise(self) -> Dict[str, Any]:
-        # TODO: Improve explanation of every exercise
-        st.write("להלן הסבר על התרגיל / קישור ל-PDF")
+        # Display exercise explanation
+        with st.expander("לצפייה בהסבר התרגיל"):
+            write_pdf(self.pdf_path)
+        st.write("")
 
         # Display download and toggle button
         self.write_download_exercise()
         display_tests = self.write_toggle_code_switch()
 
         # Displate the code editor
-        editor_response = None
         if display_tests:
             editor_response = write_editor(
                 self.test_java_code,
@@ -175,11 +178,10 @@ class Exercise(object):
             # Display output in either case
             display_output = "<התוכנה לא הדפיסה כלום>" if not output else output
             write_code(display_output, language=None)
-        except Exception as e:
+        except JavaProgramException as e:
             st.error("הרצת התוכנה נכשלה! להלן הפירוט:")
-            err_type, err_info = str(e).split("<br>", 1)
-            st.error(err_type)
-            write_code(err_info, language=None)
+            st.error(str(e))
+            write_code(e.err_info, language=None)
 
 
 def write_exercise_page(exercise_dir_path: str) -> None:
@@ -198,7 +200,7 @@ def write_exercise_page(exercise_dir_path: str) -> None:
     # Handle valid editor responses
     # TODO: Organize all the exercises to this new format
     if editor_response["type"] not in ["submit", "test"]:
-        write_error(
+        raise RecognizedSiteException(
             "אנחנו לא מכירים את הפעולה שבחרת - "
             f'{editor_response["type"]}'
         )

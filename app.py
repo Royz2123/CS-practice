@@ -1,11 +1,11 @@
 import os
-import uuid
 from typing import Callable, Dict
 
 import streamlit as st
-from streamlit.components.v1 import html
 
-from common.utils import display_name
+from common.errors import RecognizedSiteException
+from common.utils import display_name, indent_menu
+from components.error import write_error
 from components.set_direction import set_direction
 from webpages.about_page import write_about_page
 from webpages.chapter_page import write_chapter_page
@@ -17,6 +17,7 @@ from webpages.home_page import write_home_page
 # TODO: Style more, change to a single color palette
 # TODO: Think about save mode with session state
 # TODO: Think about admin mode for playing with exercises, maybe replacing sol and such
+# TODO: Improve menu more - selectable options on whole line, smooth transition, smaller width, collapsable button on right
 
 def get_all_exercise_pages() -> Dict[str, Callable]:
     exercise_pages = {}
@@ -76,13 +77,14 @@ st.markdown(
                 padding-left: 5rem;
                 padding-right: 5rem;
             }
-            .st-cf:hover {
+            #menuRadioOption:hover {
                 background-color: #bee1e5;
                 transition: 0.3s;
                 transform: scale(1.05); 
+                border-radius: 5px;
             }
-            .st-c2 {
-                width: 0rem;
+            div[data-testid="stExpander"] div[role="button"] p {
+                font-size: 1rem;
             }
         </style>
     """,
@@ -98,46 +100,18 @@ selected_page_name = st.sidebar.radio(
 
 def display_page(page_name: str) -> None:
     st.title(page_name)
+    st.divider()
     PAGES[page_name]()
 
 
-display_page(selected_page_name)
-
-# TODO: Improve menu more - selectable options on whole line, smooth transition, smaller width, collapsable button on right
-html(
-    f"""
-        <script id={uuid.uuid4()}>
-            console.log("Including indentation script");
-
-            function getNavBar() {{
-                // let navBarElements = window.parent.document.getElementsByClassName("st-b3 st-bd st-be st-bf st-bg st-bh");
-                let navBarElements = window.parent.document.getElementsByTagName("body");
-                console.log(navBarElements);
-                if (navBarElements.length > 0) {{
-                    console.log("Found NavBar!");
-                    return navBarElements[0]; 
-                }}
-                console.log("No navbar not found :(");
-                return null; 
-            }}
-
-            function setIndentation() {{
-                console.log("Setting Indentation");
-                allRadios = window.parent.document.getElementsByClassName("st-c1 st-cf st-cg st-ae st-af st-ag st-ah st-ai st-aj st-ch st-ci");
-                for (let i = 0; i < allRadios.length; i++) {{
-                    if(allRadios[i].innerHTML.startsWith("📄")) {{
-                        console.log("Indenting page", allRadios[i].innerHTML)
-                        allRadios[i].innerHTML = "&emsp;&emsp;&emsp;&emsp;" + allRadios[i].innerHTML;
-                    }}
-                    if(allRadios[i].innerHTML.startsWith("📂")) {{
-                        console.log("Indenting directory", allRadios[i].innerHTML)
-                        allRadios[i].innerHTML = "&emsp;&emsp;" + allRadios[i].innerHTML;
-                    }}
-                }}
-            }}
-
-            // Set trigger for indentation script
-            setIndentation();
-        </script>
-    """
-)
+placeholder = st.empty()
+try:
+    with placeholder.container():
+        display_page(selected_page_name)
+        indent_menu()
+except RecognizedSiteException as e:
+    with placeholder.container():
+        write_error(str(e))
+except Exception as e:
+    with placeholder.container():
+        write_error("האמת שאנחנו לא עד הסוף מבינים מה קרה ... להלן הפירוט:", str(e))

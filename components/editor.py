@@ -70,7 +70,7 @@ EDITOR_BUTTONS = [
             ]
         ],
         "style": {
-            "bottom": "2.00rem",
+            "bottom": "2.50rem",
             "right": "0.4rem"
         }
     }
