@@ -14,7 +14,6 @@ from webpages.exercise_page import write_exercise_page
 from webpages.home_page import write_home_page
 
 
-# TODO: Style more, change to a single color palette
 # TODO: Think about save mode with session state
 # TODO: Think about admin mode for playing with exercises, maybe replacing sol and such
 # TODO: Improve menu more - selectable options on whole line, smooth transition, smaller width, collapsable button on right
@@ -50,7 +49,7 @@ def test_page():
 
 PAGES = {
     "🏠 עמוד הבית": write_home_page,
-    "❓ איך מתחילים?": write_about_page,
+    "⏯️ איך מתחילים?": write_about_page,
     "✏️ תרגילים": write_exercises_intro_page,
     **get_all_exercise_pages()
 }
@@ -71,6 +70,10 @@ set_direction("body")
 st.markdown(
     """
         <style>
+            h1, h2, h3, p {
+            	font-family: 'Segoe UI';
+            }
+        
             .css-z5fcl4 {
                 padding-top: 1rem;
                 padding-bottom: 0rem;
@@ -85,6 +88,9 @@ st.markdown(
             }
             div[data-testid="stExpander"] div[role="button"] p {
                 font-size: 1rem;
+            }
+            img {
+                border-style: solid;
             }
         </style>
     """,
@@ -113,5 +119,6 @@ except RecognizedSiteException as e:
     with placeholder.container():
         write_error(str(e))
 except Exception as e:
+    raise e
     with placeholder.container():
         write_error("האמת שאנחנו לא עד הסוף מבינים מה קרה ... להלן הפירוט:", str(e))

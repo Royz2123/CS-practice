@@ -1,5 +1,5 @@
 /**
- * Test exercise template, using the test framework defined below
+ * Test Exercise_2_1, using the test framework
  * 
  */
 public class TestExercise_2_1 {

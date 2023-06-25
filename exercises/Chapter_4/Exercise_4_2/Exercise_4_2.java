@@ -1,8 +1,8 @@
 /**
- * Exercise 4.2 - Represents a shape made up of a single character.
+ * Exercise_4_2 - Represents a shape made up of a single character.
  *
  */
-public class Shape {
+public class Exercise_4_2 {
     private char tav;
 
     /**
@@ -10,7 +10,7 @@ public class Shape {
      * 
      * @param tav The character used to draw the shape.
      */
-    public Shape(char tav) {
+    public Exercise_4_2(char tav) {
         // Fill in your solution here
     }
 

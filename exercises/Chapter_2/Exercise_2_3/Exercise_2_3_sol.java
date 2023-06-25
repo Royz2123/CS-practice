@@ -4,7 +4,7 @@ import java.util.Scanner;
  * Exercise 2.2 - Convert feet to meters
  *
  */
-public class Exercise_2_2_io_sol {
+public class Exercise_2_3_sol {
 
     /**
      * Accept the given length - represented in feet & inches - from the console and print as meters

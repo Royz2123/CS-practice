@@ -113,7 +113,7 @@ class Exercise(object):
 
     def write_exercise(self) -> Dict[str, Any]:
         # Display exercise explanation
-        with st.expander("לצפייה בהסבר התרגיל"):
+        with st.expander("לצפייה בהוראות התרגיל"):
             write_pdf(self.pdf_path)
         st.write("")
 

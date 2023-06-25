@@ -2,15 +2,15 @@
  * Exercise 4.2 - Represents a shape made up of a single character.
  *
  */
-public class Shape_sol {
+public class Exercise_4_2_sol {
     private char tav;
 
     /**
      * Constructor for the Shape class. Accepts a single char called tav as an attribute.
-     * 
+     *
      * @param tav The character used to draw the shape.
      */
-    public Shape_sol(char tav) {
+    public Exercise_4_2_sol(char tav) {
         this.tav = tav;
     }
 
@@ -74,10 +74,10 @@ public class Shape_sol {
             }
         }
     }
-    
+
     /**
      * Prints a full rectangle of tavs with the given length and width.
-     * 
+     *
      * @param l The length of the rectangle to be printed.
      * @param w The width of the rectangle to be printed.
      */
@@ -92,7 +92,7 @@ public class Shape_sol {
 
     /**
      * Prints a rectangle outline of tavs with the given length and width.
-     * 
+     *
      * @param l The length of the rectangle to be printed.
      * @param w The width of the rectangle to be printed.
      */
@@ -108,10 +108,10 @@ public class Shape_sol {
             System.out.println();
         }
     }
-    
+
     public static void main(String[] args) {
-        Shape_sol s = new Shape_sol('*');
-        
+        Exercise_4_2_sol s = new Exercise_4_2_sol('*');
+
         s.lineH(5);
         System.out.println();
 

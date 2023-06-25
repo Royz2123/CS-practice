@@ -1,5 +1,5 @@
 /**
- * Exercise 3.2 - Find if rook and bishop threaten each other
+ * Exercise_3_2 - Find if rook and bishop threaten each other
  *
  */
 public class Exercise_3_2 {

@@ -1,5 +1,5 @@
 /**
- * Exercise 2.1 - Find the area of the enclosing circle given an edge length
+ * Exercise_2_1 - Find the area of the enclosing circle given an edge length
  *
  */
 public class Exercise_2_1 {

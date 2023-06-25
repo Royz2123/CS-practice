@@ -1,5 +1,5 @@
 /**
- * Exercise 2.2 - Convert feet to meters
+ * Exercise_2_2 - Convert feet to meters
  *
  */
 public class Exercise_2_2 {
