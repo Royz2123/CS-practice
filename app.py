@@ -4,7 +4,7 @@ from typing import Callable, Dict
 import streamlit as st
 
 from common.utils import display_name
-from components.body_rtl import set_body_rtl
+from components.set_direction import set_direction
 from webpages.about_page import write_about_page
 from webpages.chapter_page import write_chapter_page
 from webpages.exercise_intro_page import write_exercises_intro_page
@@ -63,7 +63,21 @@ st.set_page_config(
         'About': "# This is a header. This is an *extremely* cool app!"
     }
 )
-set_body_rtl()
+set_direction("body")
+
+st.markdown(
+    """
+        <style>
+               .css-z5fcl4 {
+                    padding-top: 1rem;
+                    padding-bottom: 0rem;
+                    padding-left: 5rem;
+                    padding-right: 5rem;
+                }
+        </style>
+    """,
+    unsafe_allow_html=True
+)
 
 # TODO: Make radio buttons more styled, and add indentation for folders. Shouldn't be that difficult
 selected_page_name = st.sidebar.radio(

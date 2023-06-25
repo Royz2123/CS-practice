@@ -1,7 +1,10 @@
+import json
+import uuid
 from copy import deepcopy
 from typing import Any, Dict
 
 from code_editor import code_editor
+from streamlit.components.v1 import html
 
 EDITOR_BUTTONS = [
     {
@@ -124,26 +127,78 @@ EDITOR_INFO_BAR = {
     },
     "info": [{
         "name": "Java",
-        "style": {"width": "300px"}
+        "style": {"width": "1000px"}
     }]
 }
 
 DEFAULT_INITIAL_CODE = "print('hello world')\n\n\n"
 
 
-def write_editor(initial_code: str = DEFAULT_INITIAL_CODE, additional_heading: str = "") -> Dict[str, Any]:
+def write_editor(
+        initial_code: str = DEFAULT_INITIAL_CODE,
+        additional_heading: str = "",
+        read_only: bool = False
+) -> Dict[str, Any]:
+    # Create editable copies of the info bar and buttons
+    editor_info_bar = deepcopy(EDITOR_INFO_BAR)
+    editor_buttons = deepcopy(EDITOR_BUTTONS)
+
     # Set code editor heading
     if additional_heading:
-        editor_info_bar = deepcopy(EDITOR_INFO_BAR)
         editor_info_bar["info"][0]["name"] = f"Java - {additional_heading}"
-    else:
-        editor_info_bar = EDITOR_INFO_BAR
+
+    # Set read only attributes
+    if read_only:
+        editor_info_bar["info"][0]["name"] += " (Read-Only)"
+        editor_info_bar["css"] += "background-color: #e5bebe;"
+        editor_buttons = [button for button in editor_buttons if button["name"] not in ["Run", "Test"]]
 
     # Return the code editor component
     editor_outputs = code_editor(
         initial_code,
         lang="java",
-        buttons=EDITOR_BUTTONS,
+        buttons=editor_buttons,
         info=editor_info_bar
     )
+
+    # Toggle readOnly property of the script
+    html(
+        f"""
+            <script id={uuid.uuid4()}>
+                console.log("Including readOnly script");
+                function getIframe(iframeTitle) {{
+                    console.log("Searching for iframe", iframeTitle);
+                    let iframeElements = window.parent.document.getElementsByTagName("iframe")
+                    for (let j = 0; j < iframeElements.length; j++){{
+                        if (iframeElements[j].title == iframeTitle) {{
+                            console.log("Found iframe titled", iframeTitle);
+                            return iframeElements[j];
+                        }}
+                    }}
+                    console.log("No iframe not found :(");
+                    return null; 
+                }}
+                
+                function setEditorReadOnly() {{
+                    // First, make this iframe smaller on the way
+                    let thisIframe = getIframe("st.iframe");
+                    thisIframe.height = "1";
+                    console.log("Set the readOnly iframe to minimal height")
+                
+                    // Now set the editor to readonly
+                    let editorIframe = getIframe("code_editor.code_editor");
+                    let textAreas = editorIframe.contentWindow.document.getElementsByClassName("ace_text-input");
+                    for (let i = 0; i < textAreas.length; i++) {{
+                        textAreas[i].readOnly = {json.dumps(read_only)};
+                        console.log("Set element to readOnly =", {json.dumps(read_only)});
+                    }} 
+                }} 
+                
+                // Set trigger for iframe
+                editorIframe = getIframe("code_editor.code_editor");
+                editorIframe.addEventListener("load", setEditorReadOnly);
+            </script>
+        """,
+    )
+
     return editor_outputs

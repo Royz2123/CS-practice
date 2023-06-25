@@ -1,14 +1,14 @@
 import streamlit as st
 
 
-def set_body_rtl() -> None:
+def set_direction(css_name: str, direction: str = "RTL") -> None:
     st.markdown(
-        """
+        f"""
             <style>
-            body {
+            {css_name} {{
               unicode-bidi:bidi-override;
-              direction: RTL;
-            }
+              direction: {direction};
+            }}
             </style>
         """,
         unsafe_allow_html=True

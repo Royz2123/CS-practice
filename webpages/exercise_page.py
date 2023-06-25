@@ -120,10 +120,16 @@ class Exercise(object):
         # Displate the code editor
         editor_response = None
         if display_tests:
-            # TODO: Make it look more like the editor, with header and copy button. Maybe can bypass editability.
-            write_code(self.test_java_code)
+            editor_response = write_editor(
+                self.test_java_code,
+                additional_heading=f"{self.tests_name}.java",
+                read_only=True,
+            )
         else:
-            editor_response = write_editor(self.template_java_code, additional_heading=f"{self.exercise_name}.java")
+            editor_response = write_editor(
+                self.template_java_code,
+                additional_heading=f"{self.exercise_name}.java"
+            )
         return editor_response
 
     def write_response(self, java_code: str, run_type: Literal["submit", "test"]) -> None:
