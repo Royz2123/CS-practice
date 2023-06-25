@@ -69,7 +69,6 @@ def run_java_program(
     # Compile and run
     try:
         # TODO: handle unsafe stuff!
-        # TODO: Change from <br> to different error types
 
         # Compile the program
         output = subprocess.run(f"javac {tmp_sub_folder_java_files}", capture_output=True, shell=True)

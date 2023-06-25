@@ -25,7 +25,7 @@ def get_all_exercise_pages() -> Dict[str, Callable]:
         if not chapter_dir_name.startswith("Chapter"):
             continue
         chapter_dir_path = os.path.join("exercises", chapter_dir_name)
-        exercise_pages[display_name(chapter_dir_name)] = lambda x=chapter_dir_path: write_chapter_page(x)
+        exercise_pages[display_name(chapter_dir_name)] = lambda x=chapter_dir_name: write_chapter_page(x)
 
         # Handle exercises under the chapter
         for exercise_dir_name in os.listdir(chapter_dir_path):
@@ -70,7 +70,7 @@ set_direction("body")
 st.markdown(
     """
         <style>
-            h1, h2, h3, p {
+            h1, h2, h3, p, div {
             	font-family: 'Segoe UI';
             }
         
@@ -79,6 +79,9 @@ st.markdown(
                 padding-bottom: 0rem;
                 padding-left: 5rem;
                 padding-right: 5rem;
+            }
+            #menuRadioOption {
+                font-family: 'Segoe UI';
             }
             #menuRadioOption:hover {
                 background-color: #bee1e5;

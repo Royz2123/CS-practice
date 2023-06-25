@@ -198,7 +198,6 @@ def write_exercise_page(exercise_dir_path: str) -> None:
         return
 
     # Handle valid editor responses
-    # TODO: Organize all the exercises to this new format
     if editor_response["type"] not in ["submit", "test"]:
         raise RecognizedSiteException(
             "אנחנו לא מכירים את הפעולה שבחרת - "
