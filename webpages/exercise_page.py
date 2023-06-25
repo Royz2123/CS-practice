@@ -17,9 +17,9 @@ TESTING_FRAMEWORK_CLASS = JavaClass("TestingFramework", class_path=TESTING_FRAME
 
 class Exercise(object):
     PATH_DISPLAY_NAMES = {
-        "template_path": "קובץ הטמפלייט",
+        "template_path": "קובץ התבנית",
         "pdf_path": "קובץ ההדרכה",
-        "test_java_path": "קובץ הבדיקות",
+        "test_java_path": "קובץ הטסטים",
     }
 
     def __init__(self, exercise_path: str):

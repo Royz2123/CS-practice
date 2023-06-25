@@ -1,10 +1,11 @@
 import streamlit as st
 
+from components.contact_us import write_contact_us
+
 
 def write_error(err_msg: str) -> None:
     # TODO: Clear the page
     st.title("😕 משהו השתבש...")
     st.write(err_msg, unsafe_allow_html=True)
 
-    # TODO: Add a contact us part, add also to homepage
-    st.write("מוזמנים ליצור איתנו קשר!")
+    write_contact_us()

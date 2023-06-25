@@ -103,7 +103,7 @@ def display_page(page_name: str) -> None:
 
 display_page(selected_page_name)
 
-# TODO: Improve menu more - selectable options on whole line, smooth transition
+# TODO: Improve menu more - selectable options on whole line, smooth transition, smaller width, collapsable button on right
 html(
     f"""
         <script id={uuid.uuid4()}>
