@@ -1,3 +1,6 @@
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Test Exercise_2_3, using the test framework
  * 
