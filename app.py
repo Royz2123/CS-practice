@@ -47,9 +47,6 @@ PAGES = {
     **get_all_exercise_pages()
 }
 
-from pprint import pprint
-pprint(list(PAGES.keys()))
-
 st.set_page_config(
     page_title='יסודות מדעי המחשב',
     page_icon="💻",
