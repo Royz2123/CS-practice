@@ -40,19 +40,15 @@ def get_all_exercise_pages() -> Dict[str, Callable]:
     return exercise_pages
 
 
-def test_page():
-    all_pages = get_all_exercise_pages()
-    with st.sidebar.expander("See explanation"):
-        for page_name, page_action in all_pages.items():
-            st.sidebar.button(page_name, on_click=page_action)
-
-
 PAGES = {
     "🏠 עמוד הבית": write_home_page,
     "⏯️ איך מתחילים?": write_about_page,
     "✏️ תרגילים": write_exercises_intro_page,
     **get_all_exercise_pages()
 }
+
+from pprint import pprint
+pprint(list(PAGES.keys()))
 
 st.set_page_config(
     page_title='יסודות מדעי המחשב',
