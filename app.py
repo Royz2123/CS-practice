@@ -17,6 +17,9 @@ from webpages.home_page import write_home_page
 # TODO: Think about save mode with session state
 # TODO: Think about admin mode for playing with exercises, maybe replacing sol and such
 # TODO: Improve menu more - selectable options on whole line, smooth transition, smaller width, collapsable button on right
+# TODO: maybe no pdf, just docx and python takes care of the rest
+# TODO: dont fail on tests that dont print anythin
+# TODO: display as ints if given as ints
 
 def get_all_exercise_pages() -> Dict[str, Callable]:
     exercise_pages = {}
