@@ -6,19 +6,8 @@ from typing import List
 
 from streamlit.components.v1 import html
 
-from common.errors import JavaProgramException
+from common.exceptions import JavaProgramException
 from common.java_class import JavaClass
-
-
-def display_name(name: str) -> str:
-    if name.startswith("Exercise"):
-        _, chapter_num, exercise_num = name.split("_", 2)
-        return f"📄 פרק {chapter_num}, תרגיל {exercise_num}"
-    elif name.startswith("Chapter"):
-        _, chapter_num = name.split("_", 1)
-        return f"📂 פרק {chapter_num}"
-    else:
-        raise Exception(f"Unrecognized name for display - {name}")
 
 
 def try_remove(path: str) -> None:
@@ -124,7 +113,7 @@ def indent_menu():
                         }}
                         if(radioContent.innerHTML.startsWith("📂")) {{
                             console.log("Indenting directory", radioContent.innerHTML);
-                            radioContent.innerHTML = "&emsp;&emsp;" + radioContent.innerHTML;
+                            radioContent.innerHTML = "&emsp;&emsp;<b>" + radioContent.innerHTML + "</b>";
                         }}
                     }}
                 }}

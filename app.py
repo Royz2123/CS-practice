@@ -1,55 +1,74 @@
+import logging
 import os
-from typing import Callable, Dict
+from pprint import pprint
+from typing import List
 
 import streamlit as st
 
-from common.errors import RecognizedSiteException
-from common.utils import display_name, indent_menu
+from common.exceptions import RecognizedSiteException, InvalidExerciseException, InvalidChapterException, Redirect
+from common.utils import indent_menu
 from components.error import write_error
 from components.set_direction import set_direction
-from webpages.about_page import write_about_page
-from webpages.chapter_page import write_chapter_page
-from webpages.exercise_intro_page import write_exercises_intro_page
-from webpages.exercise_page import write_exercise_page
-from webpages.home_page import write_home_page
+from webpages.about_page import AboutPage
+from webpages.base_page import BasePage
+from webpages.chapter_page import ChapterPage
+from webpages.exercise_intro_page import ExerciseIntoPage
+from webpages.exercise_page import ExercisePage
+from webpages.home_page import HomePage
 
 
 # TODO: Think about save mode with session state
 # TODO: Think about admin mode for playing with exercises, maybe replacing sol and such
 # TODO: Improve menu more - selectable options on whole line, smooth transition, smaller width, collapsable button on right
 # TODO: maybe no pdf, just docx and python takes care of the rest
-# TODO: dont fail on tests that dont print anythin
 # TODO: display as ints if given as ints
+# TODO: Fix menu on load shit
 
-def get_all_exercise_pages() -> Dict[str, Callable]:
-    exercise_pages = {}
+def get_all_dynamic_pages() -> List[BasePage]:
+    all_pages = []
+    chapter_pages = []
     for chapter_dir_name in os.listdir("exercises"):
-        # Handle chapter
-        if not chapter_dir_name.startswith("Chapter"):
-            continue
+        # Don't even attempt to create chapters that are clearly invalid
         chapter_dir_path = os.path.join("exercises", chapter_dir_name)
-        exercise_pages[display_name(chapter_dir_name)] = lambda x=chapter_dir_name: write_chapter_page(x)
+        if not (os.path.isdir(chapter_dir_path) and ChapterPage.valid_dir_name(chapter_dir_name)):
+            continue
 
         # Handle exercises under the chapter
+        chapter_exercise_pages = []
         for exercise_dir_name in os.listdir(chapter_dir_path):
-            if not exercise_dir_name.startswith("Exercise"):
-                continue
-
             exercise_dir_path = os.path.join(chapter_dir_path, exercise_dir_name)
-            exercise_pages[display_name(exercise_dir_name)] = lambda x=exercise_dir_path: write_exercise_page(x)
+            try:
+                # Don't even attempt to create exercises that are clearly invalid
+                if not (os.path.isdir(exercise_dir_path) and ExercisePage.valid_dir_name(exercise_dir_name)):
+                    continue
+                chapter_exercise_pages.append(ExercisePage(exercise_dir_name, chapter_dir_name))
+            except InvalidExerciseException as e:
+                logging.warning(f"Got InvalidExerciseException for {exercise_dir_name}, skipping... {e}")
 
-    # Sort based on display name (without icon)
-    exercise_pages = dict(sorted(exercise_pages.items(), key=lambda x: x[0][1:]))
-    return exercise_pages
+        # Add chapter page as well
+        try:
+            chapter_page = ChapterPage(chapter_dir_name, chapter_exercise_pages)
+            all_pages.append(chapter_page)
+            chapter_pages.append(chapter_page)
+            all_pages.extend(chapter_exercise_pages)
+        except InvalidChapterException as e:
+            logging.warning(f"Got InvalidChapterException for {chapter_dir_name}, skipping... {e}")
+
+    # Add exercise intro page
+    all_pages.append(ExerciseIntoPage(chapter_pages))
+    return all_pages
 
 
-PAGES = {
-    "🏠 עמוד הבית": write_home_page,
-    "⏯️ איך מתחילים?": write_about_page,
-    "✏️ תרגילים": write_exercises_intro_page,
-    **get_all_exercise_pages()
-}
+# Create sorted list of all pages based on menu index
+PAGES: List[BasePage] = [
+    HomePage(),
+    AboutPage(),
+    *get_all_dynamic_pages()
+]
+PAGES.sort(key=lambda page: page.menu_index)
+pprint(PAGES)
 
+# Set general app stuff
 st.set_page_config(
     page_title='יסודות מדעי המחשב',
     page_icon="💻",
@@ -66,10 +85,19 @@ set_direction("body")
 st.markdown(
     """
         <style>
-            h1, h2, h3, p, div {
+            h1, h2, h3, p, div, ul, li {
             	font-family: 'Segoe UI';
             }
         
+            .css-17b17hr li {
+                margin: 0em 1.2em 0em 1.2em;
+                padding: 0px 0em 0px 0.6em;
+                font-size: 1rem;
+                direction: rtl;
+            }
+            .css-zt5igj {
+                left: calc(0rem);
+            }
             .css-z5fcl4 {
                 padding-top: 1rem;
                 padding-bottom: 0rem;
@@ -98,26 +126,43 @@ st.markdown(
 
 selected_page_name = st.sidebar.radio(
     "Select Page",
-    PAGES.keys(),
+    [page.display_name for page in PAGES],
     label_visibility="collapsed",
 )
 
 
-def display_page(page_name: str) -> None:
-    st.title(page_name)
-    st.divider()
-    PAGES[page_name]()
+def display_page(page_display_name: str) -> None:
+    with st.container():
+        # Find page with this display name and handle errors
+        matched_pages = [page for page in PAGES if page.display_name == page_display_name]
+        if len(matched_pages) == 0:
+            raise RecognizedSiteException("לא מצאנו את הדף שבחרת")
+        elif len(matched_pages) > 1:
+            raise RecognizedSiteException("נמצאו שני דפים בעלי אותו השם")
+        page = matched_pages[0]
+
+        # Display this page
+        page.write_title()
+        page.write()
 
 
-placeholder = st.empty()
-try:
-    with placeholder.container():
-        display_page(selected_page_name)
+def main():
+    placeholder = st.empty()
+    try:
+        with placeholder.container():
+            display_page(selected_page_name)
+    except Redirect:
+        with placeholder.container():
+            display_page(selected_page_name)
+    except RecognizedSiteException as e:
+        with placeholder.container():
+            write_error(str(e))
+    except Exception as e:
+        with placeholder.container():
+            write_error("האמת שאנחנו לא עד הסוף מבינים מה קרה ... להלן הפירוט:", str(e))
+    finally:
         indent_menu()
-except RecognizedSiteException as e:
-    with placeholder.container():
-        write_error(str(e))
-except Exception as e:
-    raise e
-    with placeholder.container():
-        write_error("האמת שאנחנו לא עד הסוף מבינים מה קרה ... להלן הפירוט:", str(e))
+
+
+if __name__ == '__main__':
+    main()
