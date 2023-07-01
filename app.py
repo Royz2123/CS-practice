@@ -21,9 +21,9 @@ from webpages.home_page import HomePage
 # TODO: Think about admin mode for playing with exercises, maybe replacing sol and such
 # TODO: Improve menu more - selectable options on whole line, smooth transition, smaller width, collapsable on right
 # TODO: maybe no pdf, just docx and python takes care of the rest
-# TODO: display as ints if given as ints
 # TODO: Fix menu on load shit
 # TODO: Handle unsafe stuff!
+# TODO: Handle more class cases, optional class name in info json, multiple class exercises
 
 def get_all_dynamic_pages() -> List[BasePage]:
     all_pages = []

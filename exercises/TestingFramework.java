@@ -3,6 +3,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -47,6 +48,60 @@ class TestingFramework {
     public void assertEquals(double expected, double actual, String testName) {
         assertEquals(expected, actual, 0.001, testName);
     }
+
+    /**
+     * Compares the expected and actual integer values.
+     *
+     * Double is called before the Object assertEquals so it converts them (unwantedly),
+     * so I just created another method for ints as well
+     *
+     * @param expected the expected value
+     * @param actual the actual value
+     * @param testName the name of the test
+     */
+    public void assertEquals(int expected, int actual, String testName) {
+        if (expected == actual) {
+            testResults.add(new TestResult(testName, true, "Got " + actual + " as expected."));
+        } else {
+            testResults.add(new TestResult(testName, false, "Expected " + expected + ", but got " + actual + "."));
+        }
+    }
+
+    /**
+     * Compares the expected and actual values, and adds a message to the
+     * testResults list accordingly.
+     *
+     * @param expected the expected value
+     * @param actual the actual value
+     * @param testName the name of the test
+     */
+    public void assertEquals(int[] expected, int[] actual, String testName) {
+        boolean equals = true;
+        if (expected == null || actual == null || expected.length != actual.length) {
+            equals = false;
+        } else {
+            for (int i = 0; i < expected.length; i++) {
+                if (expected[i] != actual[i]) {
+                    equals = false;
+                }
+            }
+        }
+
+        if (equals) {
+            testResults.add(new TestResult(testName, true, "Got " + Arrays.toString(actual) + " as expected."));
+        } else {
+            testResults.add(new TestResult(testName, false, "Expected " + Arrays.toString(expected) + ", but got " + Arrays.toString(actual) + "."));
+        }
+    }
+
+//     public static <T> boolean assertEquals(T[] expected, T[] actual, String testName) {
+//         boolean equals = Arrays.equals(expected, actual);
+//         if (equals) {
+//             testResults.add(new TestResult(testName, true, "Got " + Arrays.toString(actual) + " as expected."));
+//         } else {
+//             testResults.add(new TestResult(testName, false, "Expected " + Arrays.toString(expected) + ", but got " + Arrays.toString(actual) + "."));
+//         }
+//     }
 
     /**
      * Compares the expected and actual values, and adds a message to the

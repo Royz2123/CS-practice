@@ -1,16 +1,16 @@
 /**
- * Exercise_5_1 - Remove consecutive integers from an array
+ * Exercise_5_1 - Count the number of sequences of identical integers in an array
  *
  */
 public class Exercise_5_1 {
 
-
     /**
-     * Prints a horizontal line of tavs of length len.
+     * Returns the number of sequences of identical integers in an array.
      *
-     * @param arr the a
+     * @param arr the array of given integers.
+     * @return the number of sequences of identical integers in the array.
      */
-    public static int countChanges(int arr[]) {
+    public static int countIdenticalSequences(int arr[]) {
         // Fill in your solution here
         return -1;
     }

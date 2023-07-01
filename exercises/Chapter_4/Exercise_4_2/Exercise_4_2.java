@@ -17,7 +17,7 @@ public class Exercise_4_2 {
     /**
      * Prints a horizontal line of tavs of length len.
      *
-     * @param len the length of the line to print
+     * @param len the length of the line to print.
      */
     public void lineH(int len) {
         // Fill in your solution here
