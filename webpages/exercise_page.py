@@ -85,10 +85,10 @@ class ExercisePage(BasePage):
                 )
 
         # Load exercise content
-        with open(self.template_java_path) as f:
+        with open(self.template_java_path, encoding="utf-8") as f:
             self.template_java_code = f.read()
             self.template_java_code += "\n\n"
-        with open(self.test_java_path) as f:
+        with open(self.test_java_path, encoding="utf-8") as f:
             self.test_java_code = f.read()
             self.test_java_code += "\n\n"
         self.test_java_class = JavaClass(self.tests_name, class_code=self.test_java_code)
