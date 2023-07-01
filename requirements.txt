@@ -1,3 +1,6 @@
+numpy
+pdf2jpg
+Pillow
 streamlit
 st-pages
 streamlit_code_editor

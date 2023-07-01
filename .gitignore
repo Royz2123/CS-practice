@@ -1,3 +1,6 @@
+# Project Stuff
+tmp/
+
 # Python stuff
 *.pyc
 __pycache__
