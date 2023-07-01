@@ -19,10 +19,11 @@ from webpages.home_page import HomePage
 
 # TODO: Think about save mode with session state
 # TODO: Think about admin mode for playing with exercises, maybe replacing sol and such
-# TODO: Improve menu more - selectable options on whole line, smooth transition, smaller width, collapsable button on right
+# TODO: Improve menu more - selectable options on whole line, smooth transition, smaller width, collapsable on right
 # TODO: maybe no pdf, just docx and python takes care of the rest
 # TODO: display as ints if given as ints
 # TODO: Fix menu on load shit
+# TODO: Handle unsafe stuff!
 
 def get_all_dynamic_pages() -> List[BasePage]:
     all_pages = []
@@ -44,6 +45,7 @@ def get_all_dynamic_pages() -> List[BasePage]:
                 chapter_exercise_pages.append(ExercisePage(exercise_dir_name, chapter_dir_name))
             except InvalidExerciseException as e:
                 logging.warning(f"Got InvalidExerciseException for {exercise_dir_name}, skipping... {e}")
+        chapter_exercise_pages.sort(key=lambda page: page.menu_index)
 
         # Add chapter page as well
         try:
