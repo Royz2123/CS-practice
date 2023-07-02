@@ -25,6 +25,7 @@ from webpages.teachers_page import TeachersPage
 # TODO: Fix menu on load shit
 # TODO: Handle unsafe stuff!
 # TODO: Handle more class cases, optional class name in info json, multiple class exercises
+# TODO: Add DNA check in 4.3
 
 def get_all_dynamic_pages() -> List[BasePage]:
     all_pages = []
