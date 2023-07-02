@@ -197,7 +197,7 @@ class ExercisePage(BasePage):
                     )
 
             if run_type == "submit":
-                st.success("התוכנה שלך רצה בהצלחה! להלן הפלט:")
+                st.info("התוכנה שלך התקמפלה ורצה בהצלחה! להלן הפלט:")
             elif output == "":
                 raise RecognizedSiteException("נראה שהטסטים שהודפסו לא בפורמט הנכון")
             else:

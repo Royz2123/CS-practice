@@ -15,6 +15,7 @@ from webpages.chapter_page import ChapterPage
 from webpages.exercise_intro_page import ExerciseIntoPage
 from webpages.exercise_page import ExercisePage
 from webpages.home_page import HomePage
+from webpages.teachers_page import TeachersPage
 
 
 # TODO: Think about save mode with session state
@@ -65,6 +66,7 @@ def get_all_dynamic_pages() -> List[BasePage]:
 PAGES: List[BasePage] = [
     HomePage(),
     AboutPage(),
+    TeachersPage(),
     *get_all_dynamic_pages()
 ]
 PAGES.sort(key=lambda page: page.menu_index)
